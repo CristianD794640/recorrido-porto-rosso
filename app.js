@@ -597,7 +597,7 @@ function frame() {
   if (here !== lastRoom) {
     lastRoom = here;
     wName.textContent = here ? here.name : 'Porto Rosso · Apto 4';
-    wArea.textContent = here ? `${fmt(here.area)} m²` : `${fmt(plan.area_total)} m² privados`;
+    wArea.textContent = here ? `${fmt(here.area)} m²` : `124 m² totales · ${fmt(plan.area_total)} m² privados`;
   }
   const headDeg = -THREE.MathUtils.radToDeg(player.yaw) - 90;   // rumbo en el plano (SVG con y invertida)
   me.setAttribute('transform', `translate(${player.x} ${player.z}) rotate(${headDeg})`);
