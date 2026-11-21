@@ -128,6 +128,12 @@ root.traverse(o => {
 });
 for (const o of new Set([...collide, ...pickable])) o.geometry.computeBoundsTree();
 
+// puertas batientes: se cierran cuando uno está dentro del espacio hacia el que abren, y se abren al acercarse
+// (cada hoja viene con su origen en la bisagra; "close" es el giro, en radianes, que la lleva a cerrada)
+const doors = (meta.doors || []).map(d => ({ ...d,
+  leafObj: d.leaf && root.getObjectByName(d.leaf), handleObj: d.handle && root.getObjectByName(d.handle), t: 0 }))
+  .filter(d => d.leafObj);
+
 // reflejos: un cubemap capturado en la sala para metales y vidrio (cuando ya cargaron las texturas)
 function captureEnv() {
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -278,7 +284,7 @@ function setView(px, py, headingDeg) {
   player.pitch = -0.05;
 }
 setView(...plan.start);
-if (qs.has('debug')) window.__tour = { setView, player, walkTo: (x, z) => walkTo(x, z), setFurniture: on => setFurniture(on), nav: () => NAV };   // para capturas automáticas
+if (qs.has('debug')) window.__tour = { scene, camera, setView, player, walkTo: (x, z) => walkTo(x, z), setFurniture: on => setFurniture(on), nav: () => NAV };   // para capturas automáticas
 
 const fade = document.getElementById('fade');
 let viewRoom = null;   // espacio elegido en "Espacios": se muestra aunque el punto de vista caiga entre polígonos
@@ -543,6 +549,35 @@ function hint(html, ms = 3500) {
   hintT = setTimeout(() => hintEl.classList.add('hide'), ms);
 }
 
+// ------------------------------------------------------------------ puertas
+function roomAt(x, y) {
+  let best = null;
+  for (const r of plan.rooms) if (inPoly(x, y, r.pts) && (!best || r.area < best.area)) best = r;
+  return best;
+}
+for (const d of doors) d.room = roomAt(d.c[0] + d.n[0] * 0.6, d.c[1] + d.n[1] * 0.6);   // espacio donde queda la hoja abierta
+function updateDoors(dt) {
+  const px = player.x, py = -player.z;
+  const fx = -Math.sin(player.yaw), fy = Math.cos(player.yaw);       // hacia dónde se mira, en el plano
+  const ahead = [walkTarget, ...(walkPath || []).slice(0, 2)].filter(Boolean);
+  for (const d of doors) {
+    let close = false;
+    if (!doll && d.room) {
+      const dx = d.c[0] - px, dy = d.c[1] - py, dist = Math.hypot(dx, dy);
+      const side = (px - d.c[0]) * d.n[0] + (py - d.c[1]) * d.n[1];
+      const goingOut = (dist < 1.1 && (dx * fx + dy * fy) / (dist || 1) > 0.55)
+        || ahead.some(p => Math.hypot(p.x - d.c[0], -p.y - d.c[1]) < 0.8);
+      close = side > 0.3 && inPoly(px, py, d.room.pts) && !goingOut;
+    }
+    const goal = close ? 1 : 0;
+    if (d.t === goal) continue;
+    d.t = goal > d.t ? Math.min(goal, d.t + dt * 2.2) : Math.max(goal, d.t - dt * 2.6);
+    const e = d.t * d.t * (3 - 2 * d.t);
+    d.leafObj.rotation.y = d.close * e;
+    if (d.handleObj) d.handleObj.rotation.y = d.close * e;
+  }
+}
+
 // ------------------------------------------------------------------ bucle
 const clock = new THREE.Clock();
 const wName = document.getElementById('w-name'), wArea = document.getElementById('w-area');
@@ -584,6 +619,8 @@ function frame() {
     camera.position.set(player.x, EYE, player.z);
     camera.rotation.set(player.pitch, player.yaw, 0);
   }
+
+  updateDoors(dt);
 
   // espacio actual + minimapa
   const px = doll ? orbit.target.x : player.x, py = doll ? -orbit.target.z : -player.z;
