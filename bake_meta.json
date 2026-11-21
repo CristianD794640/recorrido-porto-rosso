@@ -1,0 +1,82 @@
+{
+ "atlases": [
+  {
+   "id": 0,
+   "albedo": "tex/albedo_0.jpg",
+   "color": null,
+   "light": "tex/light_0.png",
+   "light_vacio": "tex/light_0_v.png",
+   "mueble": false
+  },
+  {
+   "id": 1,
+   "albedo": null,
+   "color": [
+    0.8399999737739563,
+    0.8199999928474426,
+    0.7799999713897705
+   ],
+   "light": "tex/light_1.png",
+   "light_vacio": "tex/light_1_v.png",
+   "mueble": false
+  },
+  {
+   "id": 2,
+   "albedo": "tex/albedo_2.jpg",
+   "color": null,
+   "light": "tex/light_2.png",
+   "light_vacio": "tex/light_2_v.png",
+   "mueble": false
+  },
+  {
+   "id": 3,
+   "albedo": "tex/albedo_3.jpg",
+   "color": null,
+   "light": "tex/light_3.png",
+   "light_vacio": "tex/light_3_v.png",
+   "mueble": false
+  },
+  {
+   "id": 4,
+   "albedo": "tex/albedo_4.jpg",
+   "color": null,
+   "light": "tex/light_4.png",
+   "light_vacio": "tex/light_4_v.png",
+   "mueble": false
+  },
+  {
+   "id": 5,
+   "albedo": "tex/albedo_5.jpg",
+   "color": null,
+   "light": "tex/light_5.png",
+   "light_vacio": null,
+   "mueble": true
+  },
+  {
+   "id": 6,
+   "albedo": "tex/albedo_6.jpg",
+   "color": null,
+   "light": "tex/light_6.png",
+   "light_vacio": null,
+   "mueble": true
+  },
+  {
+   "id": 7,
+   "albedo": "tex/albedo_7.jpg",
+   "color": null,
+   "light": "tex/light_7.png",
+   "light_vacio": null,
+   "mueble": false
+  }
+ ],
+ "nobake": [
+  "PBR_Aluminio_natural",
+  "PBR_Vidrio",
+  "PBR_Cromo",
+  "PBR_Acero_inoxidable",
+  "PBR_Acero_inoxidable_MUEBLE",
+  "PBR_Cromo_MUEBLE",
+  "PBR_Luz_LED"
+ ],
+ "light_scale": 14.88406753540039
+}
